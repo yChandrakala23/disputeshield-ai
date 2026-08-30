@@ -506,7 +506,36 @@ Accept Dispute
   </div>
 </div>
 
+{/* ----------------------------------------- */}
+{/* DISPUTE SUMMARY */}
+{/* ----------------------------------------- */}
 
+<div className="summary-card">
+
+  <div className="section-title">
+    <span>DISPUTE SUMMARY</span>
+    <span>CASE OVERVIEW</span>
+  </div>
+
+
+  <p>
+    The cardholder dispute for transaction{" "}
+    <strong>
+      {result.transaction_id}
+    </strong>{" "}
+    is classified under{" "}
+    <strong>
+      {result.evidence?.reason_code?.replace(/_/g," ")}
+    </strong>.
+  </p>
+
+
+  <p>
+    The AI assessment is based on retrieved transaction evidence,
+    customer history, payment signals and available dispute context.
+  </p>
+
+</div>
       {/* ----------------------------------------- */}
       {/* AI RATIONALE */}
       {/* ----------------------------------------- */}
