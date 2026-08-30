@@ -110,11 +110,13 @@ backend/
   decision.py           decision policy — confidence thresholds → action
   evidence_drafter.py   Groq-grounded evidence response drafter (template fallback w/o API key)
   audit.py               append-only audit log (JSONL)
-  main.py                 FastAPI app wiring it together
+  api.py                 FastAPI app wiring it together
 frontend/
-  index.html               dispute console — search, evidence detail, metrics, audit log
-data/                       generated dataset, trained model, audit log (created on first run)
-render.yaml                 Render deploy config
+ ├── src/
+ │    ├── App.jsx
+ │    └── index.css
+ ├── package.json
+ └── vite.config.js               Render deploy config
 ```
 
 ---
@@ -132,7 +134,7 @@ python3 backend/data_gen.py
 python3 backend/classifier.py
 
 # start the API
-uvicorn backend.main:app --reload --port 8000
+uvicorn backend.api:app --reload --port 8000
 ```
 
 Then open `frontend/index.html` in a browser — it talks to `http://localhost:8000` by default (editable via the API URL field in the header for pointing at a deployed backend).
@@ -140,7 +142,7 @@ Then open `frontend/index.html` in a browser — it talks to `http://localhost:8
 ## What to check first
 
 - `GET /metrics` — precision/recall/ROC-AUC on a held-out 25% split, plus a modeled false-positive cost and net value. Not one cherry-picked win.
-- `POST /disputes/{transaction_id}/process` — run the full pipeline on one dispute; try `TXN100012` or any ID from `GET /disputes/sample`.
+- `POST /disputes/{transaction_id}/process` — run the full pipeline on one dispute; 
 - `data/audit_log.jsonl` — every decision, append-only, human-readable.
 
 ---
@@ -151,9 +153,14 @@ Then open `frontend/index.html` in a browser — it talks to `http://localhost:8
 - The false-positive cost (₹550/case) and recovered-value multiplier are **stated illustrative assumptions**, not measured figures — flagged explicitly in the `/metrics` response so nobody mistakes them for real numbers.
 - The evidence drafter is instructed to cite only retrieved evidence and say so when a field is missing, rather than invent details — this is enforced by the system prompt, not yet by an automated check. A real version would add a post-hoc grounding verifier.
 
-## Next steps if you have more time
+## 📸 Screenshots
 
-1. Swap synthetic data for real Razorpay test-mode transaction + dispute data.
-2. Add a grounding-verification pass on the drafted evidence (does every claim in the draft trace to a retrieved field?).
-3. Make the decision policy's confidence thresholds cost-sensitive using the FP-cost model, instead of the current fixed 0.35 / 0.65 split.
-4. Wire the dashboard to a live dispute feed instead of the static sample dataset.
+### Dispute Analysis
+![Analysis](screenshots/analysis.png)
+
+### Explainable AI Decision
+![Explainability](screenshots/explainability.png)
+
+### Audit Trail
+![Audit](screenshots/audit.png)
+

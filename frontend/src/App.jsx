@@ -18,7 +18,7 @@ import {
 
 const API_URL = "https://disputeshield-api-xbt0.onrender.com";
 
-s
+
 function App() {
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState("Disputes");
@@ -91,12 +91,11 @@ function Disputes() {
 
     try {
       const response = await fetch(
-  `${API_URL}/disputes/${result.transaction_id}/action?action=${action}`,
+  `${API_URL}/disputes/${transactionId}/process`,
   {
-    method:"POST"
+    method: "POST"
   }
 );
-
       if (!response.ok) {
         throw new Error("Unable to process this transaction.");
       }
@@ -226,7 +225,7 @@ function AnalysisResult({ result }) {
   const updateCase = async(action)=>{
 
 const response = await fetch(
-`http://localhost:8000/disputes/${result.transaction_id}/action?action=${action}`,
+`https://disputeshield-api-xbt0.onrender.com/disputes/${result.transaction_id}/action?action=${action}`,
 {
 method:"POST"
 }
