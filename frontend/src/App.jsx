@@ -18,7 +18,7 @@ import {
 
 const API_URL = "https://disputeshield-api-xbt0.onrender.com";
 
-
+s
 function App() {
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState("Disputes");
@@ -91,14 +91,11 @@ function Disputes() {
 
     try {
       const response = await fetch(
-        `${API_URL}/disputes/${transactionId.trim()}/process`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  `${API_URL}/disputes/${result.transaction_id}/action?action=${action}`,
+  {
+    method:"POST"
+  }
+);
 
       if (!response.ok) {
         throw new Error("Unable to process this transaction.");
@@ -113,7 +110,7 @@ function Disputes() {
       console.error(err);
 
       setError(
-        "Could not connect to the DisputeShield backend. Make sure the API is running on port 8000."
+        "Could not connect to the DisputeShield backend."
       );
     } finally {
       setLoading(false);
