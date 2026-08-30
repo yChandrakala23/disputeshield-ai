@@ -26,6 +26,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+         "https://disputeshield-ai.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
