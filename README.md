@@ -6,8 +6,8 @@
 
 DisputeShield helps payment teams analyze chargeback disputes using machine learning, evidence retrieval, explainable AI, and human-in-the-loop decision workflows — reads a disputed transaction, scores whether it's defensible against a held-out-validated classifier, and drafts a grounded evidence response for winnable cases. Every decision is logged to an audit trail with the evidence and confidence behind it.
 
-🔗 **Live demo:** [add your Vercel URL here]
-📦 **API:** [add your Render URL here]
+🔗 **Live demo:**  https://disputeshield-ai.vercel.app/
+📦 **API:**  https://disputeshield-api-xbt0.onrender.com
 
 ---
 
@@ -146,21 +146,4 @@ Then open `frontend/index.html` in a browser — it talks to `http://localhost:8
 - `data/audit_log.jsonl` — every decision, append-only, human-readable.
 
 ---
-
-## Honesty notes (said out loud in the pitch, not hidden)
-
-- The dataset is **synthetic**, generated from a documented rule (see `data_gen.py`) standing in for real historical dispute outcomes. Swap in real labeled data from Razorpay's test-mode APIs before trusting the numbers beyond a demo.
-- The false-positive cost (₹550/case) and recovered-value multiplier are **stated illustrative assumptions**, not measured figures — flagged explicitly in the `/metrics` response so nobody mistakes them for real numbers.
-- The evidence drafter is instructed to cite only retrieved evidence and say so when a field is missing, rather than invent details — this is enforced by the system prompt, not yet by an automated check. A real version would add a post-hoc grounding verifier.
-
-## 📸 Screenshots
-
-### Dispute Analysis
-![Analysis](screenshots/analysis.png)
-
-### Explainable AI Decision
-![Explainability](screenshots/explainability.png)
-
-### Audit Trail
-![Audit](screenshots/audit.png)
 
