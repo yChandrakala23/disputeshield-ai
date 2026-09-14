@@ -1,149 +1,84 @@
-# 🛡️ DisputeShield AI
+# 🛡️ DisputeShield AI (Version 2.0)
 
-## AI-powered chargeback dispute intelligence platform
+## Production-Grade AI Chargeback Evidence & Risk Intelligence System
 
-**Razorpay Buildathon · AI Risk Manager track**
-
-DisputeShield helps payment teams analyze chargeback disputes using machine learning, evidence retrieval, explainable AI, and human-in-the-loop decision workflows — reads a disputed transaction, scores whether it's defensible against a held-out-validated classifier, and drafts a grounded evidence response for winnable cases. Every decision is logged to an audit trail with the evidence and confidence behind it.
-
-🔗 **Live demo:**  https://disputeshield-ai.vercel.app/
-📦 **API:**  https://disputeshield-api-xbt0.onrender.com
+DisputeShield helps merchant payment operations teams evaluate chargeback defensibility, validate reason-code evidence completeness, draft grounded merchant representment letters using AI, and log operational actions to an append-only audit trail.
 
 ---
 
-## 🚀 Problem
+## 🚀 Key Production Upgrades (v2.0)
 
-Chargeback disputes are expensive and time-consuming. Payment teams must manually review transaction evidence, determine dispute defensibility, prepare responses, and maintain audit records.
-
-DisputeShield automates this workflow while keeping humans in control.
-
----
-
-## ✨ Features
-
-### 🤖 AI Dispute Assessment
-- ML-based dispute defensibility prediction (RandomForest classifier)
-- Confidence scoring
-- Automated contest / accept / human-review recommendation
-
-### 🔍 Evidence Intelligence
-Retrieves and analyzes:
-- Transaction information
-- Delivery signals
-- Support history
-- Customer behavior patterns
-- Payment consistency signals
-
-### 🧠 Explainable AI
-Provides:
-- Decision factors, surfaced per transaction
-- Supporting evidence, cited not invented
-- Transparent reasoning behind every recommendation
-
-### ✍️ AI-Assisted Response Drafting
-Generates structured merchant chargeback responses using only retrieved evidence — grounded by system-prompt constraint, never fabricated.
-
-### 👤 Human-in-the-Loop Review
-Analysts can:
-- Contest disputes
-- Accept disputes
-- Track case status
-
-### 📋 Audit Trail
-Records:
-- Evidence retrieved
-- Model confidence
-- Decisions and their rationale
-- Timestamps — append-only, nothing overwritten
-
-### 📊 Model Intelligence Dashboard
-Displays:
-- Precision, recall, ROC-AUC — on a held-out split, not training data
-- False-positive cost, modeled explicitly
-- Net recovered value
+1. **Persistent Database Layer**: Built on SQLAlchemy ORM (`data/disputeshield.db`), persisting disputes, evidence snapshots, decisions, analyst override actions, and audit trails across server restarts.
+2. **Startup Model Loading & Async Lifespan**: Loads calibrated ML models into memory ONCE at application startup, eliminating repeated disk reads and I/O bottlenecks.
+3. **ML Benchmark & Calibration Suite**: Reproducible evaluation framework comparing 5 models (Majority Baseline, Heuristic Rules, Logistic Regression, RandomForest, Calibrated Gradient Boosting) on a 25% held-out test set with Brier calibration scores.
+4. **Reason-Code Policy Engine**: Bounded decision matrix combining evidence completeness checks, contradiction safety overrides, and calibrated ML confidence thresholds.
+5. **LLM Safety & Prompt Injection Defense**: Untrusted evidence text is wrapped in `<evidence_payload>` XML tags and sanitized against prompt injection keywords. Includes post-generation hallucination verification and safe deterministic fallback.
+6. **Automated Adversarial Test Suite**: 12 automated unit, integration, and adversarial attack tests protecting against prompt injection, contradictory evidence, missing signals, and edge cases.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-   Transaction data (Razorpay test-mode / synthetic)
-                    │
-                    ▼
-        ┌───────────────────────┐
-        │  Defensibility model  │   RandomForest, trained on
-        │    (classifier.py)    │   labeled dispute outcomes
-        └───────────┬───────────┘
-                     │ confidence score
-                     ▼
-        ┌───────────────────────┐
-        │   Decision policy     │   ≥0.65 → contest
-        │    (decision.py)      │   0.35–0.65 → human review
-        └───────────┬───────────┘   ≤0.35 → not worth contesting
-                     │
-          ┌──────────┴──────────┐
-          ▼                     ▼
-  ┌───────────────┐   ┌──────────────────┐
-  │ Evidence draft │   │   Audit log      │
-  │ (Groq/Llama,   │   │   (audit.py)     │
-  │ grounded only) │   │  append-only     │
-  └───────────────┘   └──────────────────┘
-          │                     │
-          └──────────┬──────────┘
-                      ▼
-             FastAPI (main.py)
-                      │
-                      ▼
-          Frontend dashboard (index.html)
-```
-
-**Tech stack:** FastAPI (Python) · scikit-learn (RandomForest) · Groq API for evidence drafting · pandas · React + Vite frontend · CSS · JSONL audit logging.
-
----
-
-## 📁 What's here
-
-```
-backend/
-  data_gen.py         synthetic dispute dataset generator (documented ground-truth rule)
-  classifier.py        defensibility classifier + held-out precision/recall/AUC/FP-cost report
-  decision.py           decision policy — confidence thresholds → action
-  evidence_drafter.py   Groq-grounded evidence response drafter (template fallback w/o API key)
-  audit.py               append-only audit log (JSONL)
-  api.py                 FastAPI app wiring it together
-frontend/
- ├── src/
- │    ├── App.jsx
- │    └── index.css
- ├── package.json
- └── vite.config.js               Render deploy config
+[Dispute Transaction] ──► [FastAPI Ingress (api.py)]
+                                  │
+      ┌───────────────────────────┼───────────────────────────┐
+      ▼                           ▼                           ▼
+[SQLite DB / ORM]      [Policy Rules Engine]      [Calibrated ML Model]
+(disputeshield.db)     (policy_engine.py)         (GradientBoosting)
+      │                           │                           │
+      └───────────────────────────┼───────────────────────────┘
+                                  ▼
+                    [AsyncGroq LLM Service]
+                    (Sanitized & Grounded)
+                                  │
+                                  ▼
+                    [Human Analyst Review]
+                    (Action & Override)
+                                  │
+                                  ▼
+                    [Append-Only Audit Log]
 ```
 
 ---
 
-## 🏃 Run it locally
+## 🏃 Running & Testing
 
+### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
-
-# optional — enables real LLM-drafted evidence responses instead of the template fallback
-export GROQ_API_KEY=gsk_...   # free tier, no card required at console.groq.com
-
-# generate data + train the model (also happens automatically on first API startup)
-python3 backend/data_gen.py
-python3 backend/classifier.py
-
-# start the API
-uvicorn backend.api:app --reload --port 8000
 ```
 
-Then open `frontend/index.html` in a browser — it talks to `http://localhost:8000` by default (editable via the API URL field in the header for pointing at a deployed backend).
+### 2. Generate Synthetic Dataset & Train Models
+```bash
+python backend/data_gen.py
+python backend/create_test_set.py
+python backend/classifier.py
+```
 
-## What to check first
+### 3. Run Automated Test Suite
+```bash
+pytest tests/
+# or
+python -m unittest discover tests
+```
 
-- `GET /metrics` — precision/recall/ROC-AUC on a held-out 25% split, plus a modeled false-positive cost and net value. Not one cherry-picked win.
-- `POST /disputes/{transaction_id}/process` — run the full pipeline on one dispute; 
-- `data/audit_log.jsonl` — every decision, append-only, human-readable.
+### 4. Start Backend API Server
+```bash
+uvicorn backend.api:app --reload --port 8000
+```
+- API Documentation available at: `http://localhost:8000/docs`
+
+### 5. Start Frontend Dashboard
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
+## 🔒 Security & Privacy Notice
+- Operational write endpoints support optional `X-API-Key` header authentication.
+- Audit logs automatically mask PII (email addresses, IP addresses) before writing to disk.
+- All evaluation metrics are generated on a held-out test split.

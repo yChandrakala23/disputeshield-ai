@@ -1,181 +1,77 @@
 import sys
-import joblib
-import pandas as pd
-
-from evidence_retriever import retrieve_evidence
-from classifier import score_single
-from decision_engine import decide_action
-from evidence_drafter import draft_evidence_response
-from audit import log_decision
+from backend.database import init_db, SessionLocal
+from backend.evidence_service import retrieve_evidence_payload
+from backend.ml_service import ml_service
+from backend.policy_engine import evaluate_dispute_policy
+from backend.evidence_drafter import draft_evidence_response
+from backend.audit_service import record_audit_event
 
 
-def run(transaction_id):
-
+def run(transaction_id: str):
     print("\n==============================")
-    print("      DISPUTESHIELD AI")
+    print("      DISPUTESHIELD AI v2.0")
     print("==============================\n")
 
+    init_db()
+    ml_service.load_model()
+    db = SessionLocal()
 
-    # -------------------------
-    # 1. Retrieve evidence
-    # -------------------------
+    try:
+        evidence = retrieve_evidence_payload(transaction_id, db_session=db)
+        if not evidence:
+            print(f"Error: Transaction '{transaction_id}' not found.")
+            return
 
-    evidence = retrieve_evidence(transaction_id)
+        print("===== EVIDENCE RETRIEVED =====")
+        print(evidence)
 
-    if not evidence:
-        print("Transaction not found.")
-        return
+        prediction_label, confidence = ml_service.score_dispute(evidence)
+        print("\n===== ML ASSESSMENT =====")
+        print(f"Prediction: {prediction_label} | Confidence: {confidence:.2%}")
 
-    print("===== EVIDENCE RETRIEVED =====")
-    print(evidence)
-
-
-    # -------------------------
-    # 2. Load ML model
-    # -------------------------
-
-    model_bundle = joblib.load(
-        "data/model.joblib"
-    )
-
-
-    # Convert retrieved evidence into model input
-
-    row = pd.Series({
-
-        "amount_inr":
-            float(evidence["amount_inr"]),
-
-        "delivery_confirmed":
-            evidence["delivery_confirmed"],
-
-        "tracking_matches_address":
-            evidence["tracking_matches_address"],
-
-        "signed_delivery_proof":
-            evidence["signed_delivery_proof"],
-
-        "device_matches_prior_orders":
-            evidence["device_matches_prior_orders"],
-
-        "ip_geo_matches_billing":
-            evidence["ip_geo_matches_billing"],
-
-        "customer_prior_clean_orders":
-            evidence["customer_prior_clean_orders"],
-
-        "support_ticket_exists":
-            evidence["support_ticket_exists"],
-
-        "duplicate_txn_id_found":
-            evidence["duplicate_txn_id_found"],
-
-        "subscription_cancel_logged":
-            evidence["subscription_cancel_logged"],
-
-        "days_since_transaction":
-            evidence["days_since_transaction"],
-
-        "reason_code":
-            evidence["reason_code"]
-    })
-
-
-    # -------------------------
-    # 3. ML prediction
-    # -------------------------
-
-    label, confidence = score_single(
-        model_bundle,
-        row
-    )
-
-    print("\n===== MODEL =====")
-    print("Prediction:", label)
-    print("Confidence:", confidence)
-
-
-    # -------------------------
-    # 4. Decision engine
-    # -------------------------
-
-    decision = decide_action(
-        confidence
-    )
-
-    print("\n===== DECISION =====")
-    print(decision)
-
-
-    # -------------------------
-    # 5. LLM Draft
-    # -------------------------
-
-    if decision["action"] == "RECOMMEND_CONTEST":
-
-        draft = draft_evidence_response(
-
-            transaction_id,
-
-            evidence["reason_code"],
-
-            evidence,
-
-            confidence
-
+        policy_res = evaluate_dispute_policy(
+            reason_code=evidence.get("reason_code", ""),
+            evidence=evidence,
+            confidence=confidence
         )
 
-    else:
+        print("\n===== POLICY ENGINE DECISION =====")
+        print(f"Action: {policy_res['action']}")
+        print(f"Reason: {policy_res['reason']}")
+        print(f"Requires Human Review: {policy_res['requires_human_review']}")
 
-        draft = (
-            "Draft not generated.\n"
-            "Reason: Evidence strength "
-            "does not support contest preparation."
+        draft_response = None
+        if policy_res["action"] == "RECOMMEND_CONTEST":
+            draft_response, draft_status, meta = draft_evidence_response(
+                transaction_id=transaction_id,
+                reason_code=evidence.get("reason_code", ""),
+                evidence=evidence,
+                confidence=confidence
+            )
+            print("\n===== GENERATED EVIDENCE DRAFT =====")
+            print(f"Draft Status: {draft_status}")
+            print(draft_response)
+
+        audit_entry = record_audit_event(
+            transaction_id=transaction_id,
+            event_type="CLI_DISPUTE_PROCESSED",
+            payload={
+                "evidence": evidence,
+                "confidence": confidence,
+                "decision": policy_res,
+                "draft_status": draft_response if draft_response else "N/A"
+            },
+            db_session=db
         )
+        print("\n===== AUDIT RECORDED =====")
+        print(f"Audit Event Timestamp: {audit_entry['timestamp']}")
 
-
-    print("\n===== RESPONSE DRAFT =====")
-    print(draft)
-
-
-    # -------------------------
-    # 6. Audit Trail
-    # -------------------------
-
-    audit_entry = log_decision(
-
-        transaction_id,
-
-        evidence["reason_code"],
-
-        evidence,
-
-        label,
-
-        confidence,
-
-        decision["action"],
-
-        draft
-
-    )
-
-
-    print("\n===== AUDIT LOGGED =====")
-    print(audit_entry)
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":
-
     if len(sys.argv) < 2:
-
-        print(
-            "Usage: python backend/run_pipeline.py TXN_ID"
-        )
-
-        exit()
-
-
-    run(
-        sys.argv[1]
-    )
+        print("Usage: python backend/run_pipeline.py TXN100001")
+        sys.exit(1)
+    run(sys.argv[1])

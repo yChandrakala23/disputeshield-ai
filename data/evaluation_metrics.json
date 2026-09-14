@@ -1,0 +1,171 @@
+{
+  "model_version": "gb_calibrated_v2.1",
+  "n_train": 3000,
+  "n_val": 1000,
+  "n_test": 1000,
+  "optimal_threshold": 0.5,
+  "validation_sweep": {
+    "optimal_threshold": 0.5,
+    "val_max_net_value_inr": 926659.79,
+    "sweep_sample": [
+      {
+        "threshold": 0.1,
+        "net_val": 560754.72
+      },
+      {
+        "threshold": 0.2,
+        "net_val": 720443.0
+      },
+      {
+        "threshold": 0.3,
+        "net_val": 858442.62
+      },
+      {
+        "threshold": 0.4,
+        "net_val": 913628.85
+      },
+      {
+        "threshold": 0.5,
+        "net_val": 926659.79
+      },
+      {
+        "threshold": 0.6,
+        "net_val": 839961.86
+      },
+      {
+        "threshold": 0.7,
+        "net_val": 771484.24
+      },
+      {
+        "threshold": 0.8,
+        "net_val": 476087.64
+      },
+      {
+        "threshold": 0.9,
+        "net_val": 128104.17
+      }
+    ]
+  },
+  "primary_model_metrics": {
+    "model_name": "Calibrated Gradient Boosting",
+    "precision": 0.785,
+    "recall": 0.776,
+    "f1_score": 0.78,
+    "roc_auc": 0.831,
+    "brier_score": 0.165,
+    "confusion_matrix": {
+      "tn": 367,
+      "fp": 111,
+      "fn": 117,
+      "tp": 405
+    },
+    "contested_cases": 516,
+    "false_positive_cost_inr": 61050.0,
+    "operational_review_cost_inr": 77400.0,
+    "penalty_surcharge_inr": 111000.0,
+    "recovered_value_inr": 1053168.99,
+    "net_value_inr": 803718.99
+  },
+  "benchmarks": {
+    "baseline_majority": {
+      "model_name": "Majority Class Baseline",
+      "precision": 0.522,
+      "recall": 1.0,
+      "f1_score": 0.686,
+      "roc_auc": 0.5,
+      "brier_score": 0.478,
+      "confusion_matrix": {
+        "tn": 0,
+        "fp": 478,
+        "fn": 0,
+        "tp": 522
+      },
+      "contested_cases": 1000,
+      "false_positive_cost_inr": 262900.0,
+      "operational_review_cost_inr": 150000.0,
+      "penalty_surcharge_inr": 478000.0,
+      "recovered_value_inr": 1398620.7,
+      "net_value_inr": 507720.7
+    },
+    "baseline_rules": {
+      "model_name": "Heuristic Rules Baseline",
+      "precision": 0.711,
+      "recall": 0.874,
+      "f1_score": 0.784,
+      "roc_auc": 0.811,
+      "brier_score": 0.172,
+      "confusion_matrix": {
+        "tn": 293,
+        "fp": 185,
+        "fn": 66,
+        "tp": 456
+      },
+      "contested_cases": 641,
+      "false_positive_cost_inr": 101750.0,
+      "operational_review_cost_inr": 96150.0,
+      "penalty_surcharge_inr": 185000.0,
+      "recovered_value_inr": 1196373.92,
+      "net_value_inr": 813473.92
+    },
+    "logistic_regression": {
+      "model_name": "Logistic Regression",
+      "precision": 0.705,
+      "recall": 0.751,
+      "f1_score": 0.727,
+      "roc_auc": 0.773,
+      "brier_score": 0.194,
+      "confusion_matrix": {
+        "tn": 314,
+        "fp": 164,
+        "fn": 130,
+        "tp": 392
+      },
+      "contested_cases": 556,
+      "false_positive_cost_inr": 90200.0,
+      "operational_review_cost_inr": 83400.0,
+      "penalty_surcharge_inr": 164000.0,
+      "recovered_value_inr": 1018591.27,
+      "net_value_inr": 680991.27
+    },
+    "random_forest": {
+      "model_name": "Random Forest",
+      "precision": 0.77,
+      "recall": 0.749,
+      "f1_score": 0.759,
+      "roc_auc": 0.81,
+      "brier_score": 0.185,
+      "confusion_matrix": {
+        "tn": 361,
+        "fp": 117,
+        "fn": 131,
+        "tp": 391
+      },
+      "contested_cases": 508,
+      "false_positive_cost_inr": 64350.0,
+      "operational_review_cost_inr": 76200.0,
+      "penalty_surcharge_inr": 117000.0,
+      "recovered_value_inr": 1021250.68,
+      "net_value_inr": 763700.68
+    },
+    "gradient_boosting_calibrated": {
+      "model_name": "Calibrated Gradient Boosting",
+      "precision": 0.785,
+      "recall": 0.776,
+      "f1_score": 0.78,
+      "roc_auc": 0.831,
+      "brier_score": 0.165,
+      "confusion_matrix": {
+        "tn": 367,
+        "fp": 111,
+        "fn": 117,
+        "tp": 405
+      },
+      "contested_cases": 516,
+      "false_positive_cost_inr": 61050.0,
+      "operational_review_cost_inr": 77400.0,
+      "penalty_surcharge_inr": 111000.0,
+      "recovered_value_inr": 1053168.99,
+      "net_value_inr": 803718.99
+    }
+  }
+}

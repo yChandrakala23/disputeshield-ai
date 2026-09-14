@@ -2266,3 +2266,314 @@ font-weight:700;
   color:var(--text-secondary);
 
 }
+
+/* =====================================================
+   LIFECYCLE STEPPER
+===================================================== */
+
+.lifecycle-stepper {
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.dark .lifecycle-stepper {
+  border-color: #242424;
+  background: #111111;
+}
+
+.stepper-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: #777;
+  margin-bottom: 16px;
+}
+
+.stepper-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  flex: 1;
+}
+
+.step-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  color: #666;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.dark .step-circle {
+  background: #2a2a2a;
+  color: #888;
+}
+
+.step-item.completed .step-circle {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.step-item.current .step-circle {
+  background: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+}
+
+.step-item.completed .step-label,
+.step-item.current .step-label {
+  color: inherit;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: #e5e5e5;
+  margin: 0 8px;
+}
+
+.dark .step-connector {
+  background: #242424;
+}
+
+.step-item.completed .step-connector {
+  background: #2563eb;
+}
+
+/* =====================================================
+   EXPORT PACKAGE BUTTON
+===================================================== */
+
+.export-package-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  background: rgba(37, 99, 235, 0.06);
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-package-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* =====================================================
+   SIMULATOR (SANDBOX MODE)
+===================================================== */
+
+.simulation-banner {
+  margin: 24px 0;
+  padding: 14px 18px;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  color: #d97706;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.simulator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.sim-panel {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.dark .sim-panel {
+  border-color: #242424;
+  background: #111111;
+}
+
+.sim-form .form-group {
+  margin-bottom: 16px;
+}
+
+.sim-form label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.sim-form select,
+.sim-form input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+}
+
+.dark .sim-form select,
+.dark .sim-form input[type="number"] {
+  border-color: #333;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.checkbox-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.sim-placeholder {
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #888;
+  gap: 14px;
+  padding: 0 20px;
+}
+
+.sim-score-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.sim-score-card span {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #777;
+
+}
+
+.sim-score-card strong {
+  display: block;
+  font-size: 24px;
+  color: #2563eb;
+  margin-top: 4px;
+}
+
+/* =====================================================
+   AUDIT EXPLORER CONTROLS
+===================================================== */
+
+.audit-controls {
+  margin-top: 32px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.audit-search-box {
+  flex: 1;
+  min-width: 260px;
+  height: 42px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: transparent;
+}
+
+.dark .audit-search-box {
+  border-color: #333;
+}
+
+.audit-search-box input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+}
+
+.audit-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: transparent;
+  color: #666;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dark .filter-pill {
+  border-color: #333;
+  color: #aaa;
+}
+
+.filter-pill.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
